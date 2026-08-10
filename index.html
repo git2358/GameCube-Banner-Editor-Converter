@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameCube Banner Editor & Converter</title>
+    <style>
+        :root {
+            --bg-color: #121214;
+            --card-bg: #1e1e24;
+            --accent-color: #6366f1;
+            --accent-hover: #4f46e5;
+            --text-color: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: #374151;
+            --input-bg: #111827;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 520px;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            margin-bottom: 20px;
+            text-align: center;
+            color: var(--text-color);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 14px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s, opacity 0.2s;
+            text-align: center;
+        }
+
+        .btn:hover:not(:disabled) {
+            background-color: var(--accent-hover);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background-color: #374151;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background-color: #4b5563;
+        }
+
+        .panel {
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .panel-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .preview-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        canvas {
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            background-color: #000;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            width: 288px; /* 3x scale of 96px */
+            height: 96px; /* 3x scale of 32px */
+        }
+
+        .field-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .field-row:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            font-size: 0.85rem;
+            width: 90px;
+            color: var(--text-muted);
+        }
+
+        input[type="text"], select {
+            flex: 1;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            outline: none;
+        }
+
+        input[type="text"]:focus, select:focus {
+            border-color: var(--accent-color);
+        }
+
+        select:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>GameCube Banner Editor & Converter</h1>
+
+    <!-- Top Action Buttons -->
+    <div class="button-group">
+        <button class="btn" onclick="document.getElementById('bnrFileInput').click()">📁 Open .bnr File</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('imgFileInput').click()">🖼️ Import Image</button>
+    </div>
+
+    <input type="file" id="bnrFileInput" accept=".bnr" onchange="handleBNRFile(this.files[0])">
+    <input type="file" id="imgFileInput" accept="image/*" onchange="handleImageFile(this.files[0])">
+
+    <!-- Live Preview -->
+    <div class="panel">
+        <div class="panel-title">Banner Icon Preview (3x Zoom)</div>
+        <div class="preview-container">
+            <canvas id="previewCanvas" width="96" height="32"></canvas>
+            <div class="field-row" style="width: 100%;">
+                <label for="fitMode">Aspect Fit:</label>
+                <select id="fitMode" disabled onchange="reprocessImage()">
+                    <option value="contain">contain</option>
+                    <option value="cover">cover</option>
+                    <option value="stretch">stretch</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Metadata Fields -->
+    <div class="panel">
+        <div class="panel-title">Banner Details / Metadata</div>
+        <div class="field-row">
+            <label for="titleInput">Title:</label>
+            <input type="text" id="titleInput" placeholder="Game Title" maxlength="63">
+        </div>
+        <div class="field-row">
+            <label for="authorInput">Author:</label>
+            <input type="text" id="authorInput" placeholder="Author or Company" maxlength="63">
+        </div>
+        <div class="field-row">
+            <label for="descInput">Description:</label>
+            <input type="text" id="descInput" placeholder="App / Game Description" maxlength="127">
+        </div>
+    </div>
+
+    <!-- Export Buttons -->
+    <div class="button-group" style="margin-bottom: 0;">
+        <button class="btn" onclick="exportBNR()">Save as opening.bnr</button>
+        <button class="btn btn-secondary" onclick="exportBMP()">Save as GCRebuilder BMP</button>
+    </div>
+</div>
+
+<script>
+    const WIDTH = 96;
+    const HEIGHT = 32;
+    const BNR_HEADER_SIZE = 0x20;
+    const BNR_PIXELDATA_SIZE = WIDTH * HEIGHT * 2; // 0x1800
+
+    const canvas = document.getElementById('previewCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    let rawSourceImage = null; // High-res imported master image
+    let loadedImageData = ctx.createImageData(WIDTH, HEIGHT); // Active 96x32 RGBA pixels
+
+    // Initialize Canvas with Blank Black Frame
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    // --- GameCube Color & Pixel Formatting Logic ---
+
+    function toRGB5A3(r, g, b, a) {
+        if (a >= 0xF8) {
+            return 0x8000 | ((r >> 3) << 10) | ((g >> 3) << 5) | (b >> 3);
+        }
+        return ((a >> 5) << 12) | ((r >> 4) << 8) | ((g >> 4) << 4) | (b >> 4);
+    }
+
+    function fromRGB5A3(val) {
+        let r, g, b, a;
+        if (val & 0x8000) {
+            r = Math.round(((val >> 10) & 0x1F) * 255 / 31);
+            g = Math.round(((val >> 5) & 0x1F) * 255 / 31);
+            b = Math.round((val & 0x1F) * 255 / 31);
+            a = 255;
+        } else {
+            a = Math.round(((val >> 12) & 0x07) * 255 / 7);
+            r = Math.round(((val >> 8) & 0x0F) * 255 / 15);
+            g = Math.round(((val >> 4) & 0x0F) * 255 / 15);
+            b = Math.round((val & 0x0F) * 255 / 15);
+        }
+        return [r, g, b, a];
+    }
+
+    function encodeBannerPixels(imgData) {
+        const out = new Uint8Array(BNR_PIXELDATA_SIZE);
+        const data = imgData.data;
+        let idx = 0;
+
+        for (let tileY = 0; tileY < HEIGHT; tileY += 4) {
+            for (let tileX = 0; tileX < WIDTH; tileX += 4) {
+                for (let y = tileY; y < tileY + 4; y++) {
+                    for (let x = tileX; x < tileX + 4; x++) {
+                        const pxIdx = (y * WIDTH + x) * 4;
+                        const val = toRGB5A3(data[pxIdx], data[pxIdx+1], data[pxIdx+2], data[pxIdx+3]);
+                        out[idx++] = (val >> 8) & 0xFF; // Big Endian
+                        out[idx++] = val & 0xFF;
+                    }
+                }
+            }
+        }
+        return out;
+    }
+
+    function decodeBannerPixels(uint8Array) {
+        const imgData = ctx.createImageData(WIDTH, HEIGHT);
+        const data = imgData.data;
+        let idx = 0;
+
+        for (let tileY = 0; tileY < HEIGHT; tileY += 4) {
+            for (let tileX = 0; tileX < WIDTH; tileX += 4) {
+                for (let y = tileY; y < tileY + 4; y++) {
+                    for (let x = tileX; x < tileX + 4; x++) {
+                        const val = (uint8Array[idx] << 8) | uint8Array[idx+1];
+                        idx += 2;
+                        const [r, g, b, a] = fromRGB5A3(val);
+                        const pxIdx = (y * WIDTH + x) * 4;
+                        data[pxIdx] = r;
+                        data[pxIdx+1] = g;
+                        data[pxIdx+2] = b;
+                        data[pxIdx+3] = a;
+                    }
+                }
+            }
+        }
+        return imgData;
+    }
+
+    // --- File Handlers ---
+
+    function handleBNRFile(file) {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            try {
+                const buffer = new Uint8Array(e.target.result);
+                if (buffer.length < BNR_HEADER_SIZE + BNR_PIXELDATA_SIZE) {
+                    throw new Error("File is too small to be a valid opening.bnr");
+                }
+
+                // Verify magic BNR1 or BNR2
+                const magic = String.fromCharCode(...buffer.slice(0, 4));
+                if (magic !== 'BNR1' && magic !== 'BNR2') {
+                    throw new Error("Invalid BNR header magic");
+                }
+
+                // Decode Pixel Data
+                const pixelBytes = buffer.slice(BNR_HEADER_SIZE, BNR_HEADER_SIZE + BNR_PIXELDATA_SIZE);
+                loadedImageData = decodeBannerPixels(pixelBytes);
+                ctx.putImageData(loadedImageData, 0, 0);
+
+                // Disable aspect controls on 1:1 loaded BNR pixels to preserve pixel quality
+                rawSourceImage = null;
+                document.getElementById('fitMode').disabled = true;
+
+                // Decode Text Fields without TextDecoder dependency
+                let metaOffset = BNR_HEADER_SIZE + BNR_PIXELDATA_SIZE;
+                const readStr = (offset, size) => {
+                    const bytes = buffer.slice(offset, offset + size);
+                    let end = bytes.indexOf(0);
+                    if (end === -1) end = size;
+                    let str = '';
+                    for (let i = 0; i < end; i++) {
+                        str += String.fromCharCode(bytes[i]);
+                    }
+                    return str;
+                };
+
+                const tShort = readStr(metaOffset, 0x20);
+                const aShort = readStr(metaOffset + 0x20, 0x20);
+                const tLong = readStr(metaOffset + 0x40, 0x40);
+                const aLong = readStr(metaOffset + 0x80, 0x40);
+                const desc = readStr(metaOffset + 0xC0, 0x80);
+
+                document.getElementById('titleInput').value = tLong || tShort;
+                document.getElementById('authorInput').value = aLong || aShort;
+                document.getElementById('descInput').value = desc;
+
+            } catch (err) {
+                alert("Failed to parse BNR file: " + err.message);
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    function handleImageFile(file) {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const img = new Image();
+            img.onload = function () {
+                rawSourceImage = img;
+                document.getElementById('fitMode').disabled = false;
+                
+                if (!document.getElementById('titleInput').value) {
+                    const name = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+                    document.getElementById('titleInput').value = name;
+                }
+
+                reprocessImage();
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function reprocessImage() {
+        if (!rawSourceImage) return;
+
+        const mode = document.getElementById('fitMode').value;
+        const offCanvas = document.createElement('canvas');
+        offCanvas.width = WIDTH;
+        offCanvas.height = HEIGHT;
+        const offCtx = offCanvas.getContext('2d');
+
+        offCtx.clearRect(0, 0, WIDTH, HEIGHT);
+
+        if (mode === 'stretch') {
+            offCtx.drawImage(rawSourceImage, 0, 0, WIDTH, HEIGHT);
+        } else {
+            const srcW = rawSourceImage.width;
+            const srcH = rawSourceImage.height;
+            const scale = (mode === 'cover') 
+                ? Math.max(WIDTH / srcW, HEIGHT / srcH) 
+                : Math.min(WIDTH / srcW, HEIGHT / srcH);
+
+            const newW = Math.max(1, Math.round(srcW * scale));
+            const newH = Math.max(1, Math.round(srcH * scale));
+
+            if (mode === 'cover') {
+                const left = Math.floor((newW - WIDTH) / 2);
+                const top = Math.floor((newH - HEIGHT) / 2);
+                offCtx.drawImage(rawSourceImage, left / scale, top / scale, WIDTH / scale, HEIGHT / scale, 0, 0, WIDTH, HEIGHT);
+            } else { // contain
+                const x = Math.floor((WIDTH - newW) / 2);
+                const y = Math.floor((HEIGHT - newH) / 2);
+                offCtx.drawImage(rawSourceImage, 0, 0, srcW, srcH, x, y, newW, newH);
+            }
+        }
+
+        loadedImageData = offCtx.getImageData(0, 0, WIDTH, HEIGHT);
+        ctx.putImageData(loadedImageData, 0, 0);
+    }
+
+    // --- Export Generators ---
+
+    function exportBNR() {
+        const buffer = new ArrayBuffer(BNR_HEADER_SIZE + BNR_PIXELDATA_SIZE + 320);
+        const bytes = new Uint8Array(buffer);
+
+        // Header
+        bytes[0] = 0x42; bytes[1] = 0x4E; bytes[2] = 0x52; bytes[3] = 0x31; // 'BNR1'
+
+        // Pixels
+        const pixelBytes = encodeBannerPixels(loadedImageData);
+        bytes.set(pixelBytes, BNR_HEADER_SIZE);
+
+        // Metadata
+        const title = document.getElementById('titleInput').value || "Untitled";
+        const author = document.getElementById('authorInput').value || "Unknown";
+        const desc = document.getElementById('descInput').value || "";
+
+        let offset = BNR_HEADER_SIZE + BNR_PIXELDATA_SIZE;
+        const fields = [
+            { text: title, size: 0x20 },
+            { text: author, size: 0x20 },
+            { text: title, size: 0x40 },
+            { text: author, size: 0x40 },
+            { text: desc, size: 0x80 }
+        ];
+
+        fields.forEach(f => {
+            for (let i = 0; i < f.size - 1 && i < f.text.length; i++) {
+                bytes[offset + i] = f.text.charCodeAt(i) & 0xFF;
+            }
+            offset += f.size;
+        });
+
+        downloadBlob(new Blob([buffer], { type: 'application/octet-stream' }), 'opening.bnr');
+    }
+
+    function exportBMP() {
+        const pixelDataSize = WIDTH * HEIGHT * 2;
+        const fileSize = 54 + pixelDataSize;
+        const buffer = new ArrayBuffer(fileSize);
+        const view = new DataView(buffer);
+        const bytes = new Uint8Array(buffer);
+
+        // File Header
+        bytes[0] = 0x42; bytes[1] = 0x4D; // 'BM'
+        view.setUint32(2, fileSize, true);
+        view.setUint32(6, 0, true);
+        view.setUint32(10, 54, true);
+
+        // Info Header (BITMAPINFOHEADER - 40 bytes)
+        view.setUint32(14, 40, true);
+        view.setInt32(18, WIDTH, true);
+        view.setInt32(22, HEIGHT, true);
+        view.setUint16(26, 1, true);
+        view.setUint16(28, 16, true);
+        view.setUint32(30, 0, true); // BI_RGB
+
+        // Encode GCRebuilder Spec Pixel Data (Bottom-to-Top scanlines, Top alpha bit = 0)
+        const pixels = loadedImageData.data;
+        let offset = 54;
+        for (let y = HEIGHT - 1; y >= 0; y--) {
+            for (let x = 0; x < WIDTH; x++) {
+                const pxIdx = (y * WIDTH + x) * 4;
+                const r5 = (pixels[pxIdx] >> 3) & 0x1F;
+                const g5 = (pixels[pxIdx + 1] >> 3) & 0x1F;
+                const b5 = (pixels[pxIdx + 2] >> 3) & 0x1F;
+
+                const packed = (r5 << 10) | (g5 << 5) | b5;
+                view.setUint16(offset, packed, true); // Little endian
+                offset += 2;
+            }
+        }
+
+        downloadBlob(new Blob([buffer], { type: 'image/bmp' }), 'banner.bmp');
+    }
+
+    function downloadBlob(blob, filename) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+</script>
+
+</body>
+</html>
