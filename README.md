@@ -5,8 +5,9 @@ Check out the webapp here: [GameCube Banner Editor &amp; Converter](https://git2
 
 
 ### This is simply a simple Webapp GUI version of: 
-[https://github.com/DarthMotzkus/cubiboot-new-ui/tree/main/tools/banner-converter](https://github.com/DarthMotzkus/cubiboot-new-ui/tree/main/tools/banner-converter)
-[https://github.com/DarthMotzkus/cubiboot-new-ui/tree/main#homebrew-apps](https://github.com/DarthMotzkus/cubiboot-new-ui/tree/main#homebrew-apps)
+- [https://github.com/DarthMotzkus/cubiboot-new-ui/tree/main/tools/banner-converter](https://github.com/DarthMotzkus/cubiboot-new-ui/tree/main/tools/banner-converter)
+
+- [https://github.com/DarthMotzkus/cubiboot-new-ui/blob/main/docs/settings.md#homebrew-apps](https://github.com/DarthMotzkus/cubiboot-new-ui/blob/main/docs/settings.md#homebrew-apps)
 
 
 ### Info: 
