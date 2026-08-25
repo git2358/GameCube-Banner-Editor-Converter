@@ -1,6 +1,8 @@
-# GameCube Banner Editor & Converter
+# [GameCube Banner Editor & Converter](https://git2358.github.io/GameCube-Banner-Editor-Converter/)
 
 ## A simple web-based GUI for creating and editing GameCube `opening.bnr` files for use with **[cubiboot-new-ui](https://github.com/DarthMotzkus/cubiboot-new-ui)**.
+
+---
 
 🌐 **Web App:**
 [GameCube Banner Editor & Converter](https://git2358.github.io/GameCube-Banner-Editor-Converter/)
