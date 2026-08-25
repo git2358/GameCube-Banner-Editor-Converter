@@ -24,7 +24,7 @@
 - [Using the Banner with cubiboot-new-ui](#using-the-banner-with-cubiboot-new-ui)
 - [Full cubiboot-new-ui Guide](#full-cubiboot-new-ui-guide)
 - [Credits](#credits)
-- [Demos](demo/)
+- [Demos](https://github.com/git2358/GameCube-Banner-Editor-Converter/tree/main/demo)
 
 ---
 
