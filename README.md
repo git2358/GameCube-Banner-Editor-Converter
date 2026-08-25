@@ -5,6 +5,10 @@ A simple web-based GUI for creating and editing GameCube `opening.bnr` files for
 🌐 **Web App:**
 [GameCube Banner Editor & Converter](https://git2358.github.io/GameCube-Banner-Editor-Converter/)
 
+![demo](demo/demo.gif)
+
+---
+
 ## Contents
 
 - [What is this?](#what-is-this)
