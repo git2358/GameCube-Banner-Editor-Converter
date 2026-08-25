@@ -1,6 +1,6 @@
 # GameCube Banner Editor & Converter
 
-A simple web-based GUI for creating and editing GameCube `opening.bnr` files for use with **[cubiboot-new-ui](https://github.com/DarthMotzkus/cubiboot-new-ui) homebrew applications**.
+A simple web-based GUI for creating and editing GameCube `opening.bnr` files for use with **[cubiboot-new-ui](https://github.com/DarthMotzkus/cubiboot-new-ui)**.
 
 🌐 **Web App:**
 [GameCube Banner Editor & Converter](https://git2358.github.io/GameCube-Banner-Editor-Converter/)
@@ -53,12 +53,12 @@ The repository also includes ready-to-use resources to help you get started.
 
 ### `bnr/` — Ready-to-use Banners
 
-The [`bnr`](https://github.com/git2358/GameCube-Banner-Editor-Converter/tree/main/bnr) folder contains **ready-made `.bnr` files** that can be copied directly to your **cubiboot-new-ui homebrew application folders**.
+The [`bnr`](https://github.com/git2358/GameCube-Banner-Editor-Converter/tree/main/bnr) folder contains **ready-made `.bnr` files** that can be copied directly to your **cubiboot-new-ui apps folders**.
 
 These can be useful if you:
 
 * Want a banner without creating one yourself
-* Want to quickly test cubiboot-new-ui homebrew banners
+* Want to quickly test cubiboot-new-ui banners
 * Want examples of finished `.bnr` files
 * Want to use an existing banner as a starting point
 
@@ -120,7 +120,7 @@ For the full **cubiboot-new-ui** homebrew application requirements, see the [cub
 
 ## TL;DR — Using it with cubiboot-new-ui
 
-**cubiboot-new-ui** treats a folder containing both `default.dol` and `opening.bnr` as a **homebrew application**. The two files must be in the **same folder**.
+**cubiboot-new-ui** treats a folder containing both `default.dol` and `opening.bnr` as an **app**. The two files must be in the **same folder**.
 
 For example:
 
@@ -134,14 +134,14 @@ sd:/
 
 Where:
 
-* `default.dol` = the `.dol` application that cubiboot-new-ui will launch
-* `opening.bnr` = the banner containing the application's title, description and 96×32 banner artwork
+* `default.dol` = the `.dol` app that cubiboot-new-ui will launch
+* `opening.bnr` = the banner containing the app's title, description and 96×32 banner artwork
 
-cubiboot-new-ui displays the folder as a homebrew application using the information and artwork contained in `opening.bnr`. Pressing **A** launches `default.dol`.
+cubiboot-new-ui displays the folder as an app using the information and artwork contained in `opening.bnr`. Pressing **A** launches `default.dol`.
 
 ### Example: Swiss
 
-Swiss is a special case in **cubiboot-new-ui**. A homebrew application folder whose name starts with `swiss` can be recognised and launched directly. Capitalisation does not matter.
+Swiss is a special case in **cubiboot-new-ui**. An app folder whose name starts with `swiss` can be recognised and launched directly. Capitalisation does not matter.
 
 For example:
 
@@ -216,7 +216,7 @@ This is useful because your source artwork does not necessarily have to already 
 
 ## Using the Banner with cubiboot-new-ui
 
-A folder containing both `default.dol` and `opening.bnr` is treated by **cubiboot-new-ui** as a homebrew application rather than a normal folder.
+A folder containing both `default.dol` and `opening.bnr` is treated by **cubiboot-new-ui** as an app rather than a normal folder.
 
 For example:
 
@@ -254,4 +254,4 @@ This project is a web-based GUI implementation inspired by the banner converter 
 
 **cubiboot-new-ui** is a fork of the original Cubiboot project.
 
-Thanks to the **Cubiboot and cubiboot-new-ui projects and its contributors** and for the original Cubiboot banner converter and homebrew functionality.
+Thanks to the **Cubiboot and cubiboot-new-ui projects and its contributors** and for the original Cubiboot banner converter.
