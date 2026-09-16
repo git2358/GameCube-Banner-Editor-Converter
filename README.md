@@ -7,6 +7,8 @@
 🌐 **Web App:**
 [GameCube Banner Editor & Converter](https://git2358.github.io/GameCube-Banner-Editor-Converter/)
 
+<img src="demo/demo.gif" width="240" alt="Project Demo">
+
 ---
 
 ## Contents
