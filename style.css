@@ -665,9 +665,11 @@
   bottom: 10px;
   font-family: monospace;
   font-size: .5rem;
-  color: rgba(255,255,255,.5);
-  text-shadow: 0 0 1px rgba(0,0,0,.5);
+  color: #fff;
+  mix-blend-mode: difference;
   z-index: 9999;
+  pointer-events: none;
+  isolation: auto;
 }
 
 .version {
