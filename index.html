@@ -13,7 +13,29 @@
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
 
     <script>
-const d=new Date(),s=String(d.getFullYear()+d.getMonth()+1+d.getDate()+d.getHours()+d.getMinutes()+d.getSeconds()+d.getMilliseconds()),id=crypto.randomUUID().replaceAll('-',''),v=(s+id).slice(0,32);
+function makeVersionHash(input) {
+  var h = [0x243f6a88, 0x85a308d3, 0x13198a2e, 0x03707344];
+  for (var i = 0; i < input.length; i++) {
+    var c = input.charCodeAt(i);
+    for (var j = 0; j < 4; j++) {
+      h[j] = Math.imul(h[j] ^ (c + i + j * 0x9e3779b9), 0x45d9f3b);
+      h[j] = (h[j] ^ (h[j] >>> 16)) >>> 0;
+    }
+  }
+  return h.map(function (n) { return n.toString(16).padStart(8, '0'); }).join('');
+}
+function readSource(path) {
+  var request = new XMLHttpRequest();
+  request.open('GET', path, false);
+  request.send(null);
+  if (request.status < 200 || request.status >= 300) throw new Error('Unable to read ' + path);
+  return request.responseText;
+}
+var sourceFiles = [location.pathname, 'style.css', 'script.js'];
+var sourceText = sourceFiles.map(function (path) {
+  return path + '\n' + readSource(path);
+}).join('\n\n');
+var v = makeVersionHash(sourceText).slice(0, 32);
 document.write('<link rel="stylesheet" href="style.css?v='+v+'">');
 </script>
 </head>
